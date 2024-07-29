@@ -6,6 +6,20 @@ const movieDetails = document.querySelector(".movie-details");
 
 const searchIcon = document.querySelector(".fa-search");
 const homeIcon = document.querySelector(".fa-home");
+
+const noResults = document.createElement("dialog");
+
+const noResultsMessage = document.createElement("h2");
+noResultsMessage.textContent = "No movies found...";
+noResultsMessage.classList.add("title");
+noResults.classList.add("no-results");
+const closeButton = document.createElement("a");
+closeButton.textContent = "X";
+noResults.appendChild(noResultsMessage);
+noResults.appendChild(closeButton);
+closeButton.classList.add("close-button");
+document.body.appendChild(noResults);
+
 searchIcon.addEventListener("click", () => {
   const searchBar = document.querySelector(".search-bar");
   searchBar.classList.toggle("open");
@@ -13,9 +27,13 @@ searchIcon.addEventListener("click", () => {
 
 homeIcon.addEventListener("click", () => {
   movieDetails.style.display = "none";
-  movieSlides.style.display = "flex";
+  movieSlides.style.display = "block";
+  movieNameElement.value = "";
 });
 
+document
+  .getElementById("clearInput")
+  .addEventListener("click", () => (movieNameElement.value = ""));
 movieNameElement.addEventListener("keydown", async (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -27,33 +45,46 @@ movieNameElement.addEventListener("keydown", async (event) => {
     const response = await fetch(apiUrl);
     const movieData = await response.json();
     console.log(movieData);
-    movieData.results.forEach((element) => {
-      const results = document.createElement("div");
-      const poster = document.createElement("img");
-      const titleMovie = document.createElement("h2");
-      const rating = document.createElement("p");
-      const movieOverview = document.createElement("p");
-      results.appendChild(poster);
-      results.appendChild(titleMovie);
-      results.appendChild(rating);
-      results.appendChild(movieOverview);
-      movieDetails.appendChild(results);
-      results.classList.add("results");
-      poster.classList.add("poster");
-      titleMovie.classList.add("title");
-      rating.classList.add("rating");
-      movieOverview.classList.add("movie-overview");
-      if (element) {
-        if (poster)
+
+    if (movieData.results.length === 0) {
+      noResults.showModal();
+      noResults.style.display = "flex";
+      closeButton.addEventListener("click", () => {
+        noResults.close();
+        noResults.style.display = "none";
+      });
+    } else {
+      movieData.results.forEach((element) => {
+        const results = document.createElement("div");
+        const poster = document.createElement("img");
+        const titleMovie = document.createElement("h2");
+        const rating = document.createElement("p");
+        const movieOverview = document.createElement("p");
+
+        results.appendChild(poster);
+        results.appendChild(titleMovie);
+        results.appendChild(rating);
+        results.appendChild(movieOverview);
+        movieDetails.appendChild(results);
+
+        results.classList.add("results");
+        poster.classList.add("poster");
+        titleMovie.classList.add("title");
+        rating.classList.add("rating");
+        movieOverview.classList.add("movie-overview");
+
+        if (element.poster_path) {
           poster.src = `https://image.tmdb.org/t/p/w500${element.poster_path}`;
-        poster.alt = `${element.title} poster`;
-        if (titleMovie) titleMovie.textContent = element.title;
-        if (rating) rating.textContent = element.vote_average + "⭐";
-        if (movieOverview) movieOverview.textContent = element.overview;
-      } else {
-        console.log("Movie not found");
-      }
-    });
+          poster.alt = `${element.title} poster`;
+        } else {
+          poster.alt = "No poster available";
+        }
+
+        titleMovie.textContent = element.title;
+        rating.textContent = `${element.vote_average}⭐`;
+        movieOverview.textContent = element.overview;
+      });
+    }
   }
 });
 
