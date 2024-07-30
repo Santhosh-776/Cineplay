@@ -121,6 +121,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     const result = await response.json();
     console.log(result.data);
     const highRatedMovies = result.data;
+    console.log("hello");
     createSlides(highRatedMovies);
   } catch (error) {
     console.error("Error fetching data:", error);
