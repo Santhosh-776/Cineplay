@@ -12,7 +12,14 @@
   </head>
   <body>
     <div class="background-container">
-      <div style="display: flex; align-items: center; gap: 30px">
+      <div
+        style="
+          display: flex;
+          flex-direction: row-reverse;
+          align-items: center;
+          gap: 30px;
+        "
+      >
         <div class="icons">
           <div>
             <i class="fa fa-search" id="search-icon"></i>
@@ -27,13 +34,14 @@
             name="search"
             id="movie-name"
             placeholder="Search.."
+            autofocus
           />
           <i id="clearInput">&times;</i>
         </div>
       </div>
 
       <div id="movie-slides">
-        <h1>Popular Movies</h1>
+        <h1>Top Movies/Series of the Week</h1>
       </div>
 
       <div class="movie-details"></div>

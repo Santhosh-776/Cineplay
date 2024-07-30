@@ -1,5 +1,6 @@
 import "./styles.css";
-const key = "b78137a4838e112017452d598e6ae114";
+
+const key = "ab0e9b3e";
 const movieSlides = document.querySelector("#movie-slides");
 const movieNameElement = document.getElementById("movie-name");
 const movieDetails = document.querySelector(".movie-details");
@@ -23,6 +24,7 @@ document.body.appendChild(noResults);
 searchIcon.addEventListener("click", () => {
   const searchBar = document.querySelector(".search-bar");
   searchBar.classList.toggle("open");
+  movieNameElement.focus();
 });
 
 homeIcon.addEventListener("click", () => {
@@ -41,12 +43,12 @@ movieNameElement.addEventListener("keydown", async (event) => {
     movieDetails.style.display = "grid";
     movieDetails.innerHTML = "";
     const movieName = movieNameElement.value;
-    const apiUrl = `https://api.themoviedb.org/3/search/movie?query=${movieName}&api_key=${key}`;
+    const apiUrl = `https://www.omdbapi.com/?apikey=${key}&s=${movieName}`;
     const response = await fetch(apiUrl);
     const movieData = await response.json();
     console.log(movieData);
 
-    if (movieData.results.length === 0) {
+    if (movieData.Response === "False") {
       noResults.showModal();
       noResults.style.display = "flex";
       closeButton.addEventListener("click", () => {
@@ -54,7 +56,7 @@ movieNameElement.addEventListener("keydown", async (event) => {
         noResults.style.display = "none";
       });
     } else {
-      movieData.results.forEach((element) => {
+      movieData.Search.forEach((element) => {
         const results = document.createElement("div");
         const poster = document.createElement("img");
         const titleMovie = document.createElement("h2");
@@ -73,16 +75,31 @@ movieNameElement.addEventListener("keydown", async (event) => {
         rating.classList.add("rating");
         movieOverview.classList.add("movie-overview");
 
-        if (element.poster_path) {
-          poster.src = `https://image.tmdb.org/t/p/w500${element.poster_path}`;
-          poster.alt = `${element.title} poster`;
+        if (element.Poster) {
+          poster.src = element.Poster;
+          poster.alt = `${element.Title} poster`;
         } else {
           poster.alt = "No poster available";
         }
-
-        titleMovie.textContent = element.title;
-        rating.textContent = `${element.vote_average}⭐`;
-        movieOverview.textContent = element.overview;
+        titleMovie.textContent = element.Title;
+        const movieId = element.imdbID;
+        fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${key}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.Response === "True") {
+              console.log(data);
+              rating.textContent = `${data.Ratings[0]?.Value}⭐`;
+              movieOverview.textContent = data.Plot;
+            } else {
+              console.log("Movie not found");
+            }
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+          });
       });
     }
   }
@@ -90,14 +107,20 @@ movieNameElement.addEventListener("keydown", async (event) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
+    const options = {
+      method: "GET",
+      headers: {
+        "x-rapidapi-key": "de0c4dc09cmsha23578880a13cbcp10203djsnd333482b1180",
+        "x-rapidapi-host": "imdb188.p.rapidapi.com",
+      },
+    };
     const response = await fetch(
-      `https://api.themoviedb.org/3/discover/movie?primary_release_year=2024&api_key=${key}`
+      "https://imdb188.p.rapidapi.com/api/v1/getWeekTop10",
+      options
     );
-    const data = await response.json();
-    console.log(data.results);
-    const highRatedMovies = data.results.filter(
-      (movie) => movie.vote_average > 7.2
-    );
+    const result = await response.json();
+    console.log(result.data);
+    const highRatedMovies = result.data;
     createSlides(highRatedMovies);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -110,21 +133,21 @@ function createSlides(movies) {
     return;
   }
 
-  movies.forEach((movie) => {
+  movies?.forEach((movie) => {
     const slide = document.createElement("div");
     slide.classList.add("slide");
 
     const moviePoster = document.createElement("img");
-    moviePoster.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
-    moviePoster.alt = movie.title;
+    moviePoster.src = movie.primaryImage.imageUrl;
+    moviePoster.alt = movie.titleText.text;
 
     const movieTitle = document.createElement("h3");
     movieTitle.classList.add("movie-title");
-    movieTitle.textContent = movie.title;
+    movieTitle.textContent = movie.titleText.text;
 
     const movieRating = document.createElement("p");
     movieRating.classList.add("movie-rating");
-    movieRating.innerHTML = movie.vote_average + "⭐";
+    movieRating.innerHTML = movie.ratingsSummary.aggregateRating + "⭐";
 
     const moviePlot = document.createElement("p");
     moviePlot.classList.add("movie-plot");
