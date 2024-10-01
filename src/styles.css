@@ -5,57 +5,66 @@
 }
 .background-container {
     background: linear-gradient(to right, #003060, #044576, #0e67a2, #1371af);
+    padding: 5px;
     display: flex;
     flex-direction: column;
 }
 
 .search-bar {
-    max-width: 0;
     display: flex;
     align-items: center;
+    max-width: 0;
     overflow: hidden;
-    transition: max-width 0.5s ease-in-out;
+    background-color: #fff;
     border-radius: 50px;
-    background-color: #f5f5f5;
-    padding: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: max-width 0.4s ease-in-out;
+    gap: 10px;
 }
 
-.search-bar.open {
-    max-width: 500px;
-    transition: max-width 0.5s ease-in-out;
+.open {
+    max-width: 700px;
 }
 
 #movie-name {
+    flex-grow: 1;
     border: none;
-    padding: 10px 20px;
-    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
-        sans-serif;
     font-size: 18px;
     color: #003060;
+    background-color: transparent;
+    padding: 10px;
     outline: none;
     border-radius: 50px;
-    background-color: #fff;
     width: 100%;
     transition: width 0.5s ease-in-out;
 }
 
 #movie-name:focus {
-    border: 2px solid #0e67a2;
-    box-shadow: 0 0 8px rgba(0, 96, 192, 0.2);
+    box-shadow: 0 0 10px rgba(19, 113, 175, 0.2);
+    outline: none;
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #003060;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.search-bar button:hover {
+    color: #ff6347;
 }
 
 #clearInput {
     position: relative;
-    color: black;
-    font-weight: bold;
+    font-size: 32px;
     cursor: pointer;
     margin-left: 10px;
-    right: 18px;
+    right: 2px;
 }
 
 #clearInput:hover {
-    font-weight: bold;
     color: #ff6347;
 }
 
